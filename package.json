@@ -2,10 +2,12 @@
   "name": "city-explorer",
   "version": "1.0.0",
   "description": "building a stand-alone back end which will interact with a static front end. taht will request data from an  JSON files, modify the data as needed, and send the data to the client to be displayed in the browser",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "starts": "nodemon server.js"
+
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "nodemon": "^2.0.2"
   }
 }
