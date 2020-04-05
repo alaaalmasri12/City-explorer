@@ -40,23 +40,17 @@ weatherarr.push(weather);
 
 })
 
-
-
 function Location (city,geoorphicalData) {
     this.search_query = city;
     this.formatted_query =geoorphicalData[0].display_name;
     this.latitude = geoorphicalData[0].lat;
     this.longitude = geoorphicalData[0].lon;
-
 }
 function Weather(city,WeatherData,i)
 {
     
         this.forcast = WeatherData.data[i].weather.description;
         this.time = WeatherData.data[i].datetime; 
-    
-        
-      
     
 }
 
