@@ -18,15 +18,19 @@ server.listen(PORT, () => {
 })
 
 
-server.get('/location', (req, res) => {
+server.get('/location',locationhandler) 
 
-    const geoorphicalData = require('./data/geo.json');
+function locationhandler(req, res) {
+       // const geoorphicalData = require('./data/geo.json');
+    // const city = req.query.city;
+    // const locationData = new Location(city, geoorphicalData);
+    // res.send(locationData);
     const city = req.query.city;
-    const locationData = new Location(city, geoorphicalData);
-    res.send(locationData);
-
-})
-
+    console.log(city);
+     getlocation(city)
+        .then(locationData => res.status(200).json(locationData));
+}
+ 
 server.get('/weather', weatherhandler)
 function weatherhandler(req, res) {
     const city = req.query.city;
@@ -41,12 +45,7 @@ function weatherhandler(req, res) {
      getwather(city)
         .then(weatherData => res.status(200).json(weatherData));
 }
-function Location(city, geoorphicalData) {
-    this.search_query = city;
-    this.formatted_query = geoorphicalData[0].display_name;
-    this.latitude = geoorphicalData[0].lat;
-    this.longitude = geoorphicalData[0].lon;
-}
+
 
 
 function getwather(city) {
@@ -66,6 +65,25 @@ function getwather(city) {
 
         });
 
+}
+
+function getlocation(city) {
+
+    let key = process.env.GEOCODE_API_KEY;
+    const Url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json`;
+    return superagent.get(Url)
+    .then(geodata => {
+          var locationData = new Location(city,geodata.body);
+        return locationData;
+
+        });
+
+}
+function Location(city,LocData) {
+    this.search_query = city;
+    this.formatted_query = LocData[0].display_name;
+    this.latitude = LocData[0].lat;
+    this.longitude = LocData[0].lon;
 }
 function Weather(day) {
 
