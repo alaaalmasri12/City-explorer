@@ -33,7 +33,7 @@ function locationhandler(req, res) {
  
 server.get('/weather', weatherhandler)
 function weatherhandler(req, res) {
-    const city = req.query.city;
+    const city = req.query.search_query;
     //     var weatherarr=[];
     //    const WeatherData=require('./data/weather.json');
     //         WeatherData.data.map((val)=>{
@@ -47,7 +47,31 @@ function weatherhandler(req, res) {
 }
 
 
+server.get('/trails',hikeshandler) 
+function hikeshandler(req,res)
+{
+    
+    const longitude = req.query.lon;
+    const Latitude  = req.query.lat;
+    gethikes(Latitude,longitude)
+       .then(hikesData => res.status(200).send(hikesData));
 
+}
+
+function gethikes(latitude,longitude)
+{
+    let key=process.env.TRAIL_API_KEY;
+    const Url = `https://www.hikingproject.com/data/get-trails?lat=${latitude}&lon=${longitude}&maxDistance=10&key=${key}`;
+    // console.log(Url);
+    return superagent.get(Url)
+    .then(hikeData => {
+       return hikeData.body.trails.map(val => {
+          var hikeData = new Hikes(val);
+          return hikeData;
+        });
+        
+        });
+}
 function getwather(city) {
 
     let key = process.env.weatherAPI;
@@ -64,20 +88,15 @@ function getwather(city) {
         return watherinfo;
 
         });
-
 }
-
 function getlocation(city) {
-
     let key = process.env.GEOCODE_API_KEY;
     const Url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json`;
     return superagent.get(Url)
     .then(geodata => {
           var locationData = new Location(city,geodata.body);
         return locationData;
-
         });
-
 }
 function Location(city,LocData) {
     this.search_query = city;
@@ -86,9 +105,23 @@ function Location(city,LocData) {
     this.longitude = LocData[0].lon;
 }
 function Weather(day) {
-
-    this.forcast = day.weather.description;
+    this.forecast = day.weather.description;
     this.time = day.datetime;
+}
+
+function Hikes(hike) {
+    // console.log(hike);
+    this.name = hike.name;
+    this.location= hike.location;
+    this.length=hike.length;
+    this.stars=hike.stars;
+    this.star_votes=hike.starVotes;
+    this.summery=hike.summary;
+    this.trail_url=hike.url;
+    this.conditions=hike.conidation;
+    this.condition_date=hike.condition_date;
+    this.condition_time=hike.condition_time;
+
 }
 server.use('*', (req, res) => {
     res.status(404).send('NOT FOUND');
