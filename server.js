@@ -4,8 +4,8 @@ const superagent = require('superagent');
 const express = require('express');
 
 const cors = require('cors');
-
-
+const pg=require("pg");
+const client=new  pg.Client(process.env.DATABASE_URL);
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
@@ -13,9 +13,7 @@ const server = express();
 
 server.use(cors());
 
-server.listen(PORT, () => {
-    console.log(`Listening on PORT${PORT}`);
-})
+
 
 
 server.get('/location',locationhandler) 
@@ -123,6 +121,13 @@ function Hikes(hike) {
     this.condition_time=hike.condition_time;
 
 }
+client.connect()
+.then(()=>{
+    server.listen(PORT, () => {
+        console.log(`Listening on PORT${PORT}`);
+    })
+});
+
 server.use('*', (req, res) => {
     res.status(404).send('NOT FOUND');
 });
