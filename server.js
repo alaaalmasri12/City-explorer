@@ -1,14 +1,13 @@
 'use strict';
-require('dotenv').config();
 const superagent = require('superagent');
 const express = require('express');
+require('dotenv').config();
 const cors = require('cors');
 const pg=require("pg");
 const client=new  pg.Client(process.env.DATABASE_URL2);
 
 const PORT = process.env.PORT || 3000;
 const app = express();
-
 app.use(cors());
 
 
@@ -151,13 +150,19 @@ function Hikes(hike) {
 }
 
 
-app.use('*', (req, res) => {
-    res.status(404).send('NOT FOUND');
-});
 
-app.get('*', notFoundHandler);
 
-app.use(errorHandler);
+    app.use('*', (req, res) => {
+        res.status(404).send('NOT FOUND');
+    });
+    // app.get('*', notFoundHandler);
+    app.use(errorHandler);
+    function notFoundHandler(request, response) {
+        response.status(404).send('huh????');
+    }
+    function errorHandler(error, request, response) {
+        response.status(500).send(error);
+    }
 
 function notFoundHandler(request,response) { 
     response.status(404).send('huh????');
