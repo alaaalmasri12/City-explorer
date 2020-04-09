@@ -26,7 +26,6 @@ function locationhandler(req, res) {
     // const locationData = new Location(city, geoorphicalData);
     // res.send(locationData);
     const city = req.query.city;
-    console.log(city);
      getlocation(city)
         .then(locationData => res.status(200).json(locationData));
 }
@@ -41,7 +40,6 @@ function weatherhandler(req, res) {
     //              weatherarr.push(weather);
     //     })
     // res.send(weatherarr);
-    console.log(city);
      getwather(city)
         .then(weatherData => res.status(200).json(weatherData));
 }
@@ -50,19 +48,21 @@ function weatherhandler(req, res) {
 server.get('/trails',hikeshandler) 
 function hikeshandler(req,res)
 {
-    
-    const longitude = req.query.lon;
-    const Latitude  = req.query.lat;
-    gethikes(Latitude,longitude)
-       .then(hikesData => res.status(200).send(hikesData));
+    const city=req.query.search_query;
+  getlocation(city)
+.then((data)=>{
+    return gethikes(data)
+    .then(hikesData => res.status(200).send(hikesData));
+})
 
 }
 
-function gethikes(latitude,longitude)
+function gethikes(citycoirdantes)
 {
     let key=process.env.TRAIL_API_KEY;
-    const Url = `https://www.hikingproject.com/data/get-trails?lat=${latitude}&lon=${longitude}&maxDistance=10&key=${key}`;
+    const Url = `https://www.hikingproject.com/data/get-trails?lat=${citycoirdantes.latitude}&lon=${citycoirdantes.longitude}&maxDistance=10&key=${key}`;
     // console.log(Url);
+    // console.log('asdsadhaskj',citycoirdantes);
     return superagent.get(Url)
     .then(hikeData => {
        return hikeData.body.trails.map(val => {
@@ -77,13 +77,11 @@ function getwather(city) {
     let key = process.env.weatherAPI;
     const watherinfo=[];    
     const Url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${key}`;
-    console.log('asdasdasdsa',Url);
     return superagent.get(Url)
     .then(weatherData => {
         weatherData.body.data.map(val => {
           var weatherData = new Weather(val);
           watherinfo.push(weatherData);
-          console.log(weatherData,city);
         });
         return watherinfo;
 
